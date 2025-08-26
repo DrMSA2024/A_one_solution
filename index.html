@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A One Solution 24x7</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: linear-gradient(135deg, #f5f7fa, #c3cfe2); color: #333; }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(to right, #2c3e50, #4a6491);
+      color: white;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo { font-size: 1.6rem; font-weight: bold; display: flex; align-items: center; gap: .7rem; }
+    .logo img { height: 40px; border-radius: 6px; }
+    nav { display: flex; gap: 1.5rem; }
+    nav a { color: white; text-decoration: none; font-weight: 500; transition: 0.3s; }
+    nav a:hover { color: #f1c40f; }
+    .menu-toggle { display: none; font-size: 1.8rem; cursor: pointer; }
+    @media (max-width: 768px) {
+      nav { 
+        position: absolute; 
+        top: 65px; 
+        left: 0; 
+        right: 0; 
+        background: #2c3e50; 
+        flex-direction: column; 
+        align-items: center; 
+        padding: 1rem 0;
+        display: none; 
+      }
+      nav.show { display: flex; }
+      .menu-toggle { display: block; }
+    }
+
+    .tagline { text-align: center; padding: 0.5rem 1rem; font-style: italic; opacity: 0.9; background: #34495e; color: #eee; }
+
+    /* SECTIONS */
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
+    .section-title { text-align: center; margin: 2.5rem 0; color: #2c3e50; }
+    .section-title:after {
+      content: ''; display: block; width: 80px; height: 4px; background: #3498db;
+      margin: 0.5rem auto; border-radius: 2px;
+    }
+
+    /* SERVICES */
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem; margin-bottom: 3rem;
+    }
+    .service-card {
+      background: white; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      transition: transform 0.6s ease, opacity 0.6s ease;
+      opacity: 0; transform: translateY(40px);
+    }
+    .service-card.visible { opacity: 1; transform: translateY(0); }
+    .service-card:hover { transform: translateY(-10px); }
+    .service-header {
+      background: linear-gradient(to right, #3498db, #2c3e50);
+      color: white; padding: 1.2rem; text-align: center;
+      font-size: 1.2rem; font-weight: 600;
+    }
+    .service-list { padding: 1rem 1.5rem; list-style: none; }
+    .service-list li { padding: 0.6rem 0; border-bottom: 1px dashed #eee; display: flex; align-items: center; }
+    .service-list li:last-child { border-bottom: none; }
+    .service-list i { color: #3498db; margin-right: 10px; font-size: 1rem; }
+    
+    /* Useful Links Styling */
+    .website-url {
+      display: block;
+      font-size: 0.8rem;
+      color: #7f8c8d;
+      margin-top: 2px;
+    }
+    .service-list a {
+      text-decoration: none;
+      color: #333;
+      display: block;
+      transition: color 0.3s;
+    }
+    .service-list a:hover {
+      color: #3498db;
+    }
+
+    /* RATE LIST */
+    .rate-list-container {
+      background: white; 
+      border-radius: 12px; 
+      padding: 2.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      margin-bottom: 2rem; 
+      opacity: 0; 
+      transform: translateY(40px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .rate-list-container.visible { opacity: 1; transform: translateY(0); }
+    .rate-list-content {
+      max-height: 500px; 
+      overflow-y: auto;
+      padding: 1rem;
+      border: 1px solid #eee;
+      border-radius: 8px;
+    }
+    .rate-list-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+    .rate-list-table th {
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      text-align: left;
+    }
+    .rate-list-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .rate-list-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .download-btn {
+      display: inline-block;
+      background: #3498db;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .download-btn:hover {
+      background: #2980b9;
+    }
+
+    /* CONTACT */
+    .contact-section {
+      background: white; border-radius: 12px; padding: 2.5rem;
+      text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      margin-bottom: 2rem; opacity: 0; transform: translateY(40px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .contact-section.visible { opacity: 1; transform: translateY(0); }
+    .contact-info {
+      display: flex; justify-content: center; flex-wrap: wrap;
+      gap: 2rem; margin-top: 1.5rem;
+    }
+    .contact-item {
+      display: flex; align-items: center;
+      background: #f8f9fa; padding: 1rem 1.5rem; border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+    .contact-item:hover { transform: scale(1.05); }
+    .contact-item i { font-size: 1.8rem; color: #3498db; margin-right: 1rem; }
+    .contact-text h3 { margin-bottom: 0.3rem; color: #2c3e50; }
+    .contact-text p { color: #7f8c8d; }
+
+    /* FOOTER */
+    footer { background: #2c3e50; color: white; text-align: center; padding: 1.5rem; margin-top: 3rem; }
+
+    /* WHATSAPP FLOATING BUTTON */
+    .whatsapp-float {
+      position: fixed; bottom: 20px; right: 20px;
+      background: #25D366; color: white; border-radius: 50%;
+      width: 55px; height: 55px; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 2rem; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.3s; z-index: 999;
+    }
+    .whatsapp-float:hover { transform: scale(1.1); }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <img src="logo.jpg" alt="Logo"> <!-- Replace with your logo file -->
+      A One Solution 24x7
+    </div>
+    <div class="menu-toggle"><i class="fas fa-bars"></i></div>
+    <nav>
+      <a href="#services">Services</a>
+      <a href="#ratelist">Rate List</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+  <div class="tagline">Your one-stop solution for printing, online & offline services</div>
+
+  <!-- SERVICES -->
+  <div class="container" id="services">
+    <div class="section-title"><h2>Our Services</h2></div>
+    <div class="services-grid">
+      
+      <!-- Printing -->
+      <div class="service-card"><div class="service-header"><i class="fas fa-print"></i> Printing & Photos</div>
+        <ul class="service-list">
+          <li><i class="fas fa-check-circle"></i> Black & White Print</li>
+          <li><i class="fas fa-check-circle"></i> Colour Print</li>
+          <li><i class="fas fa-check-circle"></i> Photo Copy</li>
+          <li><i class="fas fa-check-circle"></i> Lamination (A4 & A3)</li>
+          <li><i class="fas fa-check-circle"></i> Passport Size Photo</li>
+          <li><i class="fas fa-check-circle"></i> Mug Print</li>
+          <li><i class="fas fa-check-circle"></i> T-Shirt Print</li>
+          <li><i class="fas fa-check-circle"></i> Pillow Print</li>
+        </ul>
+      </div>
+
+      <!-- ID & Certificates -->
+      <div class="service-card"><div class="service-header"><i class="fas fa-id-card"></i> ID & Certificates</div>
+        <ul class="service-list">
+          <li><i class="fas fa-check-circle"></i> Aadhar / PAN / Voter ID</li>
+          <li><i class="fas fa-check-circle"></i> Birth / Death Certificate</li>
+          <li><i class="fas fa-check-circle"></i> Income Certificate</li>
+          <li><i class="fas fa-check-circle"></i> Police Verification</li>
+        </ul>
+      </div>
+
+      <!-- Recharge & Bills -->
+      <div class="service-card"><div class="service-header"><i class="fas fa-bolt"></i> Recharge & Bills</div>
+        <ul class="service-list">
+          <li><i class="fas fa-check-circle"></i> PF Withdrawal</li>
+          <li><i class="fas fa-check-circle"></i> Mobile Recharge</li>
+          <li><i class="fas fa-check-circle"></i> Electricity Bill</li>
+          <li><i class="fas fa-check-circle"></i> Gas Bill</li>
+          <li><i class="fas fa-check-circle"></i> Road Tax</li>
+          <li><i class="fas fa-check-circle"></i> Pollution / Insurance</li>
+        </ul>
+      </div>
+
+      <!-- Online & Digital -->
+      <div class="service-card"><div class="service-header"><i class="fas fa-laptop"></i> Online & Digital</div>
+        <ul class="service-list">
+          <li><i class="fas fa-check-circle"></i> Online Forms</li>
+          <li><i class="fas fa-check-circle"></i> Online Admission</li>
+          <li><i class="fas fa-check-circle"></i> School Project</li>
+          <li><i class="fas fa-check-circle"></i> Resume</li>
+          <li><i class="fas fa-check-circle"></i> PTM Scanner</li>
+        </ul>
+      </div>
+
+      <!-- Design & Office -->
+      <div class="service-card"><div class="service-header"><i class="fas fa-briefcase"></i> Office & Business</div>
+        <ul class="service-list">
+          <li><i class="fas fa-check-circle"></i> Visiting Card</li>
+          <li><i class="fas fa-check-circle"></i> Rubber Stamp</li>
+          <li><i class="fas fa-check-circle"></i> Letter Head</li>
+          <li><i class="fas fa-check-circle"></i> Flex / Bill Book</li>
+          <li><i class="fas fa-check-circle"></i> Money Transfer</li>
+          <li><i class="fas fa-check-circle"></i> Bus / Train Tickets</li>
+        </ul>
+      </div>
+      
+      <!-- Useful Website Links -->
+      <div class="service-card">
+        <div class="service-header"><i class="fas fa-link"></i> Useful Website Links</div>
+        <ul class="service-list">
+		 <li>
+            <a href="https://drmsa2024.github.io/Final_QR_Code/" target="_blank">
+              <i class="fas fa-external-link-alt"></i>
+              Generate Your QR Code
+              <span class="website-url">https://drmsa2024.github.io/Final_QR_Code/</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://imagetosketchconverter.blogspot.com/2025/05/free-online-image-to-sketch-converter.html" target="_blank">
+              <i class="fas fa-external-link-alt"></i>
+              Online Image to Sketch Converter
+              <span class="website-url">imagetosketchconverter.blogspot.com</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://profilepictureresizer.blogspot.com/2025/05/free-social-media-profile-picture.html" target="_blank">
+              <i class="fas fa-external-link-alt"></i>
+              Social Media Profile Picture Resizer
+              <span class="website-url">profilepictureresizer.blogspot.com</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://advancegrayconverter.blogspot.com/2025/05/gray-converter.html" target="_blank">
+              <i class="fas fa-external-link-alt"></i>
+              Free Online Grayscale Image Converter
+              <span class="website-url">advancegrayconverter.blogspot.com</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://imagetopdfandpdftoimageconverter.blogspot.com/2025/05/free-online-image-to-pdf-pdf-to-image.html" target="_blank">
+              <i class="fas fa-external-link-alt"></i>
+              Online PDF & Image Conversion Tools
+              <span class="website-url">imagetopdfandpdftoimageconverter.blogspot.com</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://imagesharpnesstool.blogspot.com/2025/05/free-online-image-sharpness-tool.html" target="_blank">
+              <i class="fas fa-external-link-alt"></i>
+              Free Online Image Sharpness Tool
+              <span class="website-url">imagesharpnesstool.blogspot.com</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://drmsa2024.github.io/--Maitri/https://drmsa2024.github.io/Final_QR_Code/" target="_blank">
+              <i class="fas fa-external-link-alt"></i>
+              Discover Your True Companions
+              <span class="website-url">drmsa2024.github.io</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://drmsa2024.github.io/ikigai_finder/" target="_blank">
+              <i class="fas fa-external-link-alt"></i>
+              Discover Your Ikigai
+              <span class="website-url">drmsa2024.github.io/ikigai_finder</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://drmsa2024.github.io/Goal-Setting-Self-Reflection/" target="_blank">
+              <i class="fas fa-external-link-alt"></i>
+              Goal-Setting Self-Reflection
+              <span class="website-url">drmsa2024.github.io/Goal-Setting-Self-Reflection</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RATE LIST -->
+  <div class="container" id="ratelist">
+    <div class="section-title"><h2>Our Service Rate List 2025</h2></div>
+    <div class="rate-list-container">
+      <div class="rate-list-content" id="rateListContent">
+        <table class="rate-list-table">
+          <thead>
+            <tr>
+              <th>SL.</th>
+              <th>ITEMS</th>
+              <th>RATE</th>
+              <th>ITEMS</th>
+              <th>RATE</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>B/W PHOTO COPY</td><td>2/-</td><td>BIRTH CERTIFICATE APPLY</td><td>250/7000/-</td></tr>
+            <tr><td>2</td><td>B/W PRINT OUT</td><td>5/-</td><td>INCOME CERTIFICATE APPLY</td><td>150/3500/-</td></tr>
+            <tr><td>3</td><td>COLOUR PHOTO COPY</td><td>5/-</td><td>CASH WITHDRAWAL 1000 PR</td><td>10/-</td></tr>
+            <tr><td>4</td><td>COLOUR PRINT OUT</td><td>10/-</td><td>MONEY TRANSFER 1000 PR</td><td>10/-</td></tr>
+            <tr><td>5</td><td>MUG PRINT</td><td>220/-</td><td>ROAD TAX AS PER AMOUNT</td><td>30/50</td></tr>
+            <tr><td>6</td><td>T-SHIRT PRINT</td><td>270/-</td><td>RESUME</td><td>35/-</td></tr>
+            <tr><td>7</td><td>P.SIZE PHOTO (8 PHOTO)</td><td>30/-</td><td>POLICE VERIFICATION DELHI</td><td>450/-</td></tr>
+            <tr><td>8</td><td>P.SIZE PHOTO (30 PHOTO)</td><td>50/-</td><td>POLICE VERIFICATION UP</td><td>150/-</td></tr>
+            <tr><td>9</td><td>4X6 PHOTO COLOUR</td><td>20/-</td><td>RUBBER STAMP</td><td>200/-</td></tr>
+            <tr><td>10</td><td>5X7 PHOTO COLOUR</td><td>30/-</td><td>VISITING CARD</td><td>350/450/500/-</td></tr>
+            <tr><td>11</td><td>CARD LAMINATION</td><td>10/-</td><td>ELECTRICITY / GAS BILL PAYMENT</td><td>10/20/30...</td></tr>
+            <tr><td>12</td><td>A4 HARD LAMINATION / A3 LAMINATION</td><td>30/-</td><td>BIRTH CERTIFICATE DOWNLOAD WITH LAM.</td><td>70/-</td></tr>
+            <tr><td>13</td><td>AADHAR CARD DOWNLOAD</td><td>10/15/-</td><td>NAME ADD IN BIRTH CERTIFICATE W/ LAM.</td><td>200/-</td></tr>
+            <tr><td>14</td><td>AADHAR CARD PRINT + LAMINATION</td><td>50/-</td><td>SPIRAL BINDING</td><td>30/60/-</td></tr>
+            <tr><td>15</td><td>AADHAR CARD PVC</td><td>100/-</td><td>SCANNER</td><td>60/-</td></tr>
+            <tr><td>16</td><td>AADHAR DOWNLOAD WITH FINGER</td><td>80/-</td><td>POCKET SCANNER</td><td>50/-</td></tr>
+            <tr><td>17</td><td>AADHAR PHONE NUMBER LINK</td><td>200/-</td><td>ADVANCE PF</td><td>200/-</td></tr>
+            <tr><td>18</td><td>TRAIN TICKET (PER PERSON)</td><td>30/-</td><td>FULL PF APPLY</td><td>500/-</td></tr>
+            <tr><td>19</td><td>POLLUTION BIKE</td><td>120/-</td><td>AADHAR + PAN LINK</td><td>1100/-</td></tr>
+            <tr><td>20</td><td>POLLUTION CAR</td><td>200/-</td><td>ONLINE FORM APPLY</td><td>50/100/-</td></tr>
+            <tr><td>21</td><td>PAN CARD RE-PRINT</td><td>100/-</td><td>LABOUR CARD NEW</td><td>1000/-</td></tr>
+            <tr><td>22</td><td>MINOR PAN CARD</td><td>250/-</td><td>LABOUR CARD RENEW (3 YEARS)</td><td>1800/-</td></tr>
+            <tr><td>23</td><td>PAN NUMBER FIND</td><td>100/-</td><td>DOCUMENT TYPING</td><td>25/-</td></tr>
+            <tr><td>24</td><td>PAN CARD APPLY</td><td>200/-</td><td>NEW AADHAR CARD</td><td>300/-</td></tr>
+            <tr><td>25</td><td>PAN CARD LOST RE-APPLY</td><td>250/-</td><td>AADHAR CARD UPDATE PHOTO ONLY</td><td>200/-</td></tr>
+            <tr><td>26</td><td>PAN CARD CORRECTION</td><td>200/-</td><td>AADHAR UPDATE PHOTO + MOBILE</td><td>300/-</td></tr>
+            <tr><td>27</td><td>RATION CARD PRINT</td><td>50/-</td><td>AADHAR ADDRESS UPDATE W/ PROOF</td><td>200/-</td></tr>
+            <tr><td>28</td><td>RATION CARD KYC</td><td>30/-</td><td>AADHAR ADDRESS UPDATE W/O PROOF</td><td>400/-</td></tr>
+            <tr><td>29</td><td>RATION NUMBER FIND</td><td>50/-</td><td></td><td></td></tr>
+            <tr><td>30</td><td>VOTER CARD APPLY</td><td>100/-</td><td></td><td></td></tr>
+            <tr><td>31</td><td>VOTER INSTANT M.N. LINK</td><td>50/-</td><td></td><td></td></tr>
+            <tr><td>32</td><td>VOTER CARD PRINT</td><td>50/-</td><td></td><td></td></tr>
+            <tr><td>33</td><td>VOTER CARD PVC PRINT</td><td>100/-</td><td></td><td></td></tr>
+            <tr><td>34</td><td>E-SHARM CARD APPLY</td><td>100/-</td><td></td><td></td></tr>
+            <tr><td>35</td><td>E-SHARM CARD UPDATE</td><td>100/-</td><td></td><td></td></tr>
+            <tr><td>36</td><td>AYUSHMAN CARD APPLY</td><td>100/-</td><td></td><td></td></tr>
+            <tr><td>37</td><td>AYUSHMAN CARD APPLY + PVC PRINT</td><td>200/-</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 1rem; font-weight: bold;">🕒 AONE SOLUTIONS SERVICES: MORNING 7 AM TO 10:00 PM</p>
+      </div>
+      <div class="download-btn" id="downloadPdf">
+        <i class="fas fa-download"></i> Download Rate List as PDF
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="container" id="contact">
+    <div class="section-title"><h2>Contact Us</h2></div>
+    <div class="contact-section">
+      <p>Reach out for any queries or services</p>
+      <div class="contact-info">
+        <div class="contact-item"><i class="fas fa-envelope"></i><div class="contact-text"><h3>Email</h3><p>Starsalman87@gmail.com</p></div></div>
+        <div class="contact-item"><i class="fas fa-phone"></i><div class="contact-text"><h3>Phone</h3><p>+91 9711703875</p><p>+91 971703875</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 A One Solution 24x7. Open 24/7 for your convenience</p>
+  </footer>
+
+  <!-- WhatsApp Floating Button -->
+  <a href="https://wa.me/919711703875" target="_blank" class="whatsapp-float">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <!-- SCRIPT -->
+  <script>
+    // Menu toggle functionality
+    const menuToggle = document.querySelector(".menu-toggle");
+    const nav = document.querySelector("nav");
+    menuToggle.addEventListener("click", () => nav.classList.toggle("show"));
+
+    // Scroll animation for elements
+    const elements = document.querySelectorAll(".service-card, .contact-section, .rate-list-container");
+    function isInViewport(el) { 
+      const rect = el.getBoundingClientRect();
+      return (
+        rect.top <= (window.innerHeight || document.documentElement.clientHeight) - 100
+      );
+    }
+    
+    function revealOnScroll() {
+      elements.forEach(el => { 
+        if (isInViewport(el)) el.classList.add("visible"); 
+      });
+    }
+    
+    window.addEventListener("scroll", revealOnScroll);
+    revealOnScroll();
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('nav a').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        window.scrollTo({
+          top: targetElement.offsetTop - 70,
+          behavior: 'smooth'
+        });
+        
+        // Close mobile menu after clicking
+        if (window.innerWidth <= 768) {
+          nav.classList.remove('show');
+        }
+      });
+    });
+
+    // PDF Download functionality - Fixed
+    document.getElementById('downloadPdf').addEventListener('click', function() {
+      // Using html2canvas and jsPDF
+      const { jsPDF } = window.jspdf;
+      
+      // Get the element to convert to PDF
+      const element = document.getElementById('rateListContent');
+      
+      // Create a new PDF with proper dimensions
+      const pdf = new jsPDF('p', 'pt', 'a4');
+      
+      // Set higher scale for better quality
+      const options = {
+        scale: 3, // Higher scale for better quality
+        useCORS: true,
+        logging: false
+      };
+      
+      // Use html2canvas to capture the content
+      html2canvas(element, options).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        // Add the image to the PDF
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        
+        // Save the PDF
+        pdf.save('A-One-Solution-Rate-List-2025.pdf');
+      }).catch(error => {
+        console.error('Error generating PDF:', error);
+        alert('There was an error generating the PDF. Please try again.');
+      });
+    });
+  </script>
+</body>
+</html>
